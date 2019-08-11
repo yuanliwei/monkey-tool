@@ -1,4 +1,4 @@
-module.exports = class Demo {
+module.exports = class Index {
     constructor(app) {
         this.app = app
         this.loader = app.loader
@@ -6,8 +6,8 @@ module.exports = class Demo {
     }
 
     /**
-     * 
-     * @param {*} param0 
+     *
+     * @param {*} param0
      */
     async init({ app, loader }) {
         await loader.load('jquery', 'popper')
@@ -20,6 +20,7 @@ module.exports = class Demo {
         document.body.innerHTML = fs.readFileSync(__dirname + '/template.html', 'utf-8')
 
         // views
+        /** @type {HTMLElement} */
         this.screenImg = document.querySelector('#screen')
         this.canvas = document.querySelector('#screen_mask')
         this.left = document.querySelector('.left')
@@ -33,15 +34,33 @@ module.exports = class Demo {
         this.ratioSize = 1
         this.screenSize = { width: 100, height: 100 }
 
-        this.initImage(this)
+        await this.initImage(this)
         this.initButtons()
 
-        this.refresh()
-        this.drawRect(this)
+        await this.refresh()
+
+        let sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout))
+
+        while (true) {
+            try {
+                await this.refresh()
+            } catch (e) {
+                console.error(e);
+            }
+            await sleep(1000)
+        }
+    }
+
+    async loadScreenImage() {
+        return new Promise(async (resolve, reject) => {
+            this.screenImg.src = await (await fetch('/capture')).text()
+            this.screenImg.onload = resolve
+            this.screenImg.onerror = reject
+        })
     }
 
     async refresh() {
-        this.screenImg.src = await (await fetch('/capture')).text()
+        await this.loadScreenImage()
         await this.drawRect(this)
     }
 
@@ -58,11 +77,38 @@ module.exports = class Demo {
             this.ctx.stroke()
             this.findClickView(ev.offsetX, ev.offsetY, this.currentTree, this.ratioSize)
         }
+
+
+        let mouseHasDown = false
+
+        /** @type {HTMLElement} */
+        let canvas = this.canvas
+        canvas.onmousedown = (ev) => {
+            if (ev.button != 0) return
+            mouseHasDown = true
+            let cmd = `touch down ${parseInt(ev.offsetX / this.ratioSize)} ${parseInt(ev.offsetY / this.ratioSize)}`
+            fetch(`/run?cmd=${encodeURI(cmd)}`)
+        }
+        canvas.onmousemove = (ev) => {
+            if (ev.button != 0) return
+            if (!mouseHasDown) return
+            let cmd = `touch move ${parseInt(ev.offsetX / this.ratioSize)} ${parseInt(ev.offsetY / this.ratioSize)}`
+            fetch(`/run?cmd=${encodeURI(cmd)}`)
+        }
+        canvas.onmouseup = (ev) => {
+            if (ev.button != 0) return
+            if (!mouseHasDown) return
+            mouseHasDown = false
+            let cmd = `touch up ${parseInt(ev.offsetX / this.ratioSize)} ${parseInt(ev.offsetY / this.ratioSize)}`
+            fetch(`/run?cmd=${encodeURI(cmd)}`)
+        }
+        canvas.onmouseout = canvas.onmouseup
+        canvas.onmouseleave = canvas.onmouseup
     }
 
     /**
-     * 
-     * @param {Object} param0 
+     *
+     * @param {Object} param0
      * @param {HTMLElement} param0.canvas
      * @param {CanvasRenderingContext2D} param0.ctx
      */
@@ -114,6 +160,7 @@ module.exports = class Demo {
      * @property {number} deep deep 0
      * @property {number} index index 0
      * @property {string} resource_id -2147483650
+     * @property {string} resource_id_name com.android.calculator2:id/mode
      * @property {string} bounds "[0,0][1080,2316]"
      * @property {string} class  "android.widget.FrameLayout"
      * @property {number} inputType  -1
@@ -129,16 +176,17 @@ module.exports = class Demo {
      */
 
     /**
-     * 
-     * @param number} x 
-     * @param number} y 
-     * @param {ViewTree} tree 
-     * @param {number} ratioSize 
+     *
+     * @param number} x
+     * @param number} y
+     * @param {ViewTree} tree
+     * @param {number} ratioSize
      */
     findClickView(x, y, tree, ratioSize) {
         x = x / ratioSize
         y = y / ratioSize
         let getRect = (bounds) => bounds.match(/\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]/).slice(1).map(o => parseInt(o))
+        /** @type {ViewTree[]} */
         let arr = []
         let loop = (node) => { arr.push(node); node.childrens && node.childrens.forEach(o => loop(o)) }
         loop(tree)
@@ -147,42 +195,39 @@ module.exports = class Demo {
             let [x1, y1, x2, y2] = getRect(o.bounds)
             console.log(ratioSize, x, y, x1, y1, x2, y2);
             if (x > x1 && x < x2 && y > y1 && y < y2) {
-                findArr.push(`${' '.repeat(o.deep)} ${o.class} ${o.text&&o.text.replace(/\n/g,' ')} ${o.resource_id}`)
-                // findArr.push({
-                //     'class':o.class
-                // })
+                findArr.push(`${' '.repeat(o.deep)} ${o.class} ${o.text && o.text.replace(/\n/g, ' ')} ${o.resource_id} ${o.resource_id_name}`)
             }
         })
         this.clearMessage()
-        // this.message(`${JSON.stringify(findArr, null, 4)}`)
         this.message(findArr.join('\n'))
         console.log(findArr.join('\n'))
     }
 
     /**
-     * 
-     * @param {Object} param0 
+     *
+     * @param {Object} param0
      * @param {HTMLElement} param0.left
      * @param {HTMLElement} param0.canvas
      * @param {HTMLElement} param0.screenImg
      * @param {CanvasRenderingContext2D} param0.ctx
      */
     async initImage({ left, canvas, screenImg, ctx }) {
-        screenImg.onload = async (ev) => {
-            let ratio = screenImg.width / screenImg.height
-            screenImg.onload = null
-            let width = left.clientWidth
-            let height = left.clientHeight
-            left.style.width = height * ratio + 'px'
-            screenImg.style.width = '100%'
-            canvas.width = height * ratio
-            canvas.height = height
-            this.drawRect(this)
-
-            this.screenSize = await (await fetch('/screensize')).json()
-            this.ratioSize = height * ratio / this.screenSize.width
-
-        }
+        return new Promise(async (resolve, reject) => {
+            this.screenImg.src = await (await fetch('/capture')).text()
+            screenImg.onload = async (ev) => {
+                let ratio = screenImg.width / screenImg.height
+                screenImg.onload = null
+                let width = left.clientWidth
+                let height = left.clientHeight
+                left.style.width = height * ratio + 'px'
+                screenImg.style.width = '100%'
+                canvas.width = height * ratio
+                canvas.height = height
+                this.screenSize = await (await fetch('/screensize')).json()
+                this.ratioSize = height * ratio / this.screenSize.width
+                resolve()
+            }
+        })
     }
 
     message(msg) {

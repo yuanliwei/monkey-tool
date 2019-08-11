@@ -8,6 +8,7 @@ module.exports = (connect, options) => {
         ['/jsontree', handleJsonTree],
         ['/capture', handleCapture],
         ['/screensize', handleScreenSize],
+        ['/run', handleRun],
     ]
 }
 
@@ -16,22 +17,22 @@ const monkey = require('./src/tool/index')
 
 /**
  * handle
- * 
- * @param {http.IncomingMessage} req 
- * @param {http.ServerResponse} res 
+ *
+ * @param {http.IncomingMessage} req
+ * @param {http.ServerResponse} res
  */
 async function handleJsonTree(req, res) {
-    let tree = await monkey.getVisibleTree()
+    let tree = await monkey.query(`queryview gettree json`)
     res.writeHead(200, { 'Content-Type': mine['json'] });
-    res.write(JSON.stringify(tree))
+    res.write(tree)
     res.end();
 }
 
 /**
  * handle
- * 
- * @param {http.IncomingMessage} req 
- * @param {http.ServerResponse} res 
+ *
+ * @param {http.IncomingMessage} req
+ * @param {http.ServerResponse} res
  */
 async function handleCapture(req, res) {
     let screenshot = await monkey.query('takescreenshot scale 0.4')
@@ -43,9 +44,9 @@ async function handleCapture(req, res) {
 
 /**
  * handleScreenSize
- * 
- * @param {http.IncomingMessage} req 
- * @param {http.ServerResponse} res 
+ *
+ * @param {http.IncomingMessage} req
+ * @param {http.ServerResponse} res
  */
 async function handleScreenSize(req, res) {
     // getvar display.width
@@ -54,6 +55,22 @@ async function handleScreenSize(req, res) {
     let height = await monkey.query('getvar display.height')
     res.writeHead(200, { 'Content-Type': mine['json'] });
     res.write(JSON.stringify({ width: parseInt(width), height: parseInt(height) }));
+    res.end();
+}
+
+/**
+ * handleRun
+ *
+ * @param {http.IncomingMessage} req
+ * @param {http.ServerResponse} res
+ */
+async function handleRun(req, res) {
+    const url = require('url');
+    const querystring = require('querystring');
+    let cmd = querystring.parse(url.parse(req.url).query).cmd
+    monkey.run(cmd)
+    res.writeHead(200, { 'Content-Type': mine['json'] });
+    res.write(JSON.stringify({}));
     res.end();
 }
 
