@@ -28,6 +28,8 @@ gulp.task('dev-server', function () {
 gulp.task('dev-pack', function () {
     fs.copyFileSync(path.join(__dirname, 'src', 'index.html'), path.join(__dirname, 'dist', 'index.html'))
     return browserify({ entries: './src/app.js', debug: true })
+        .ignore('golden-layout')
+        .transform('babelify')
         .transform('brfs')
         .bundle()
         .pipe(source('app.js'))
@@ -60,6 +62,8 @@ gulp.task('release', function () {
         }
     })
     return browserify({ entries: './src/app.js', debug: false })
+        .ignore('golden-layout')
+        .transform('babelify')
         .transform('brfs')
         .plugin('tinyify')
         .bundle()

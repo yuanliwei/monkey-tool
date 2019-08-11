@@ -3,7 +3,8 @@
         "browser": true,
         "commonjs": true,
         "es6": true,
-        "node": true
+        "node": true,
+        "jquery": true
     },
     "parser": "babel-eslint",
     "parserOptions": {
@@ -11,6 +12,9 @@
             "jsx": true
         },
         "sourceType": "module"
+    },
+    "globals": {
+        "GoldenLayout": "readonly"
     },
     "rules": {
         "no-const-assign": "warn",

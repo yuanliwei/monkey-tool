@@ -1,0 +1,24 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  /* overflow: hidden; */
+  margin: 0;
+  padding: 0;
+}
+
+#goldenlayout {
+  overflow: hidden;
+}
+
+body .lm_content {
+  overflow: auto;
+}
+
+.screenshot-container {
+  position: relative;
+}
+
+.screenshot, .screenshot_mask  {
+  user-select: none;
+  position: absolute;
+}

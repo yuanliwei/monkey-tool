@@ -11,8 +11,10 @@
     "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@yuanliwei/web-loader": "^1.0.2",
+    "babelify": "^10.0.0",
     "brfs": "^2.0.2",
     "browserify": "^16.3.0",
+    "golden-layout": "^1.5.9",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-connect": "^5.7.0",
@@ -28,6 +30,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
     "he": "^1.2.0",
+    "moment": "^2.24.0",
     "packery": "^2.1.2",
     "particlesjs": "^2.2.3",
     "vkbeautify": "^0.99.3"

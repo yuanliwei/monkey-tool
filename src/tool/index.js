@@ -74,7 +74,7 @@ let query = (command) => new Promise(async (resolve) => {
     queryCallbackUniques.push(unique)
     queryCallbackMap[unique] = () => { }
     run(`echo ${unique}`)
-    run(command);
+    run(command)
     unique = uuid()
     queryCallbackUniques.push(unique)
     queryCallbackMap[unique] = (data) => resolve(data.replace(/^[^;]*OK:/, '').trim())
@@ -94,6 +94,8 @@ let getRect = (bounds) => bounds.match(/\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]/)
  * @property {number} deep deep 0
  * @property {number} index index 0
  * @property {string} resource_id -2147483650
+ * @property {string} resource_id_name com.android.calculator2:id/mode
+ * @property {string} text text
  * @property {string} bounds "[0,0][1080,2316]"
  * @property {string} class  "android.widget.FrameLayout"
  * @property {number} inputType  -1
@@ -116,8 +118,8 @@ let getRect = (bounds) => bounds.match(/\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]/)
  */
 let filterVisible = (tree) => {
     let loop = (o, w, h, gap) => o.childrens = o.childrens.filter(n => {
-        loop(n, w, h, gap);
-        let r = getRect(n.bounds);
+        loop(n, w, h, gap)
+        let r = getRect(n.bounds)
         return n.childrens.length > 0
             || (r[0] < w - gap
                 && r[1] < h - gap
@@ -125,9 +127,9 @@ let filterVisible = (tree) => {
                 && r[3] > gap
                 && r[2] - r[0] > gap
                 && r[3] - r[1] > 5)
-    });
-    let rect = getRect(tree.bounds);
-    loop(tree, rect[2], rect[3], 5);
+    })
+    let rect = getRect(tree.bounds)
+    loop(tree, rect[2], rect[3], 5)
     return tree
 }
 
@@ -168,10 +170,10 @@ let waitChange = () => new Promise(async (resolve) => {
  */
 let getVisibleTree = async () => {
     let json = await query('queryview gettree json')
-    if(json.startsWith('ERROR:')){
+    if (json.startsWith('ERROR:')) {
         json = await query('queryview gettree json')
     }
-    if(json.startsWith('ERROR:')){
+    if (json.startsWith('ERROR:')) {
         console.error(json);
         return {}
     }

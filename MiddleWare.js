@@ -12,7 +12,6 @@ module.exports = (connect, options) => {
     ]
 }
 
-const { exec, execSync } = require('child_process');
 const monkey = require('./src/tool/index')
 
 /**
