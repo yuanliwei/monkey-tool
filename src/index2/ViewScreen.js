@@ -42,7 +42,7 @@ export default class ViewScreen extends BaseView {
             } catch (e) {
                 console.error(e);
             }
-            await sleep(1000)
+            await sleep(100)
         }
 
     }

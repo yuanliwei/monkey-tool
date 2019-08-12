@@ -14,7 +14,8 @@
         "sourceType": "module"
     },
     "globals": {
-        "GoldenLayout": "readonly"
+        "GoldenLayout": "readonly",
+        "CodeMirror": "readonly"
     },
     "rules": {
         "no-const-assign": "warn",

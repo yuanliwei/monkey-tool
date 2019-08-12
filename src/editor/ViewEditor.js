@@ -11,9 +11,11 @@ export default class ViewEditor extends BaseView {
     async onCreateView(state) {
         this.container.css("height", "100%")
         await CodeMirrorUtil.load(this.loader)
-        let CodeMirror = window.CodeMirror || {}
+        // @ts-ignore
+        let CodeMirror = window.CodeMirror || require('codemirror')
         let html = $(`<textarea />`)
         this.container.append(html)
+        // @ts-ignore
         var editor = CodeMirror.fromTextArea(html[0], {
             lineNumbers: true,
             matchBrackets: true,
@@ -33,10 +35,15 @@ export default class ViewEditor extends BaseView {
         setTimeout(() => {
             editor.refresh()
         }, 100)
+
         this.onStateChanged = (item) => { editor.refresh() }
 
         this.app.layout.eventHub.on('onaddcode', (cb) => {
-            editor.setValue(cb.message)
+            editor.execCommand("goLineEnd")
+            editor.execCommand("newlineAndIndent")
+            let doc = editor.getDoc()
+            let cursor = doc.getCursor()
+            doc.replaceRange(cb.message, cursor)
         });
     }
 
