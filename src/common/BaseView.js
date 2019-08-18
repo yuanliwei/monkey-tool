@@ -118,7 +118,18 @@ export default class BaseView {
     // this.layout.addView(name, componentName, state)
   }
 
-  emitLayout(event){
+  emitLayout(event) {
     this.layout.layout.emit(event)
+  }
+
+  queryBy(event) {
+    return new Promise((resolve) => {
+      let uniqId = `queryId-${Date.now()}-${Math.random()}`
+      this.app.layout.eventHub.on(uniqId, (cb) => {
+        this.app.layout.eventHub.off(uniqId)
+        resolve(cb.message)
+      })
+      this.app.layout.eventHub.emit(event, { uniqId: uniqId })
+    })
   }
 }

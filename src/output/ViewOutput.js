@@ -14,10 +14,11 @@ export default class ViewOutput extends BaseView {
         let CodeMirror = window.CodeMirror || {}
         let html = $(`<textarea />`)
         this.container.append(html)
+        /** @type {import("codemirror").EditorFromTextArea} */
         var editor = CodeMirror.fromTextArea(html[0], {
             lineNumbers: true,
             matchBrackets: true,
-            lineWrapping: false,
+            lineWrapping: true,
             mode: { name: state.name, globalVars: true },
             foldGutter: true,
             autoCloseBrackets: true,
@@ -37,6 +38,11 @@ export default class ViewOutput extends BaseView {
 
         this.app.layout.eventHub.on('onfindclicktree', (cb) => {
             editor.setValue(cb.message)
+        });
+
+        this.app.layout.eventHub.on('getOutputSelectText', (cb) => {
+            let selection = editor.getDoc().getSelection()
+            this.app.layout.eventHub.emit(cb.uniqId, { message: selection })
         });
     }
 

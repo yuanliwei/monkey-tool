@@ -36,9 +36,18 @@ export default class ViewScreen extends BaseView {
 
         let sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout))
 
+        this.app.layout.eventHub.on('stopRefresh', (cb) => {
+            this.autoRefresh = false
+        });
+        this.app.layout.eventHub.on('startRefresh', (cb) => {
+            this.autoRefresh = true
+        });
+        this.autoRefresh = false
         while (true) {
             try {
-                await this.refresh()
+                if (this.autoRefresh) {
+                    await this.refresh()
+                }
             } catch (e) {
                 console.error(e);
             }

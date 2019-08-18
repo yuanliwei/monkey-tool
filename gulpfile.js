@@ -18,7 +18,7 @@ const middleware = require("./MiddleWare")
 gulp.task('dev-server', function () {
     connect.server({
         name: 'Dev App',
-        root: ['dist'],
+        root: ['dest'],
         port: 8000,
         livereload: true,
         middleware: middleware
@@ -26,7 +26,7 @@ gulp.task('dev-server', function () {
 });
 
 gulp.task('dev-pack', function () {
-    fs.copyFileSync(path.join(__dirname, 'src', 'index.html'), path.join(__dirname, 'dist', 'index.html'))
+    fs.copyFileSync(path.join(__dirname, 'src', 'index.html'), path.join(__dirname, 'dest', 'index.html'))
     return browserify({ entries: './src/app.js', debug: true })
         .ignore('golden-layout')
         .ignore('codemirror')
@@ -37,7 +37,7 @@ gulp.task('dev-pack', function () {
         .pipe(buffer())
         .pipe(sourcemaps.init({ loadMaps: true }))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('dist/'))
+        .pipe(gulp.dest('dest/'))
         .pipe(connect.reload())
         .on('error', function (e) {
             log.error(e)
