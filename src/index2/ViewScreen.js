@@ -1,13 +1,13 @@
 //@ts-check
 
 import BaseView from "../common/BaseView"
-// const BaseView = require('../common/BaseView');
 
 export default class ViewScreen extends BaseView {
     constructor(app) {
         super(app)
     }
 
+    // eslint-disable-next-line no-unused-vars
     async onCreateView(state) {
         const fs = require('fs')
         let html = $(fs.readFileSync(__dirname + '/template.html', 'utf-8'))
@@ -36,10 +36,10 @@ export default class ViewScreen extends BaseView {
 
         let sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout))
 
-        this.app.layout.eventHub.on('stopRefresh', (cb) => {
+        this.app.layout.eventHub.on('stopRefresh', () => {
             this.autoRefresh = false
         });
-        this.app.layout.eventHub.on('startRefresh', (cb) => {
+        this.app.layout.eventHub.on('startRefresh', () => {
             this.autoRefresh = true
         });
         this.autoRefresh = false

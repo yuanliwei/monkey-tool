@@ -3,6 +3,7 @@
  * @param {connectModule} connect
  * @param {ConnectAppOptions} options
  */
+// eslint-disable-next-line no-unused-vars
 module.exports = (connect, options) => {
     return [
         ['/jsontree', handleJsonTree],

@@ -1,13 +1,13 @@
 //@ts-check
 
 import BaseView from "../common/BaseView"
-import CodeMirrorUtil from "../common/CodeMirrorUtil";
 
 export default class ViewCommand extends BaseView {
     constructor(app) {
         super(app)
     }
 
+    // eslint-disable-next-line no-unused-vars
     async onCreateView(state) {
         const fs = require('fs')
         this.container.append(fs.readFileSync(__dirname + '/template.html', 'utf-8'))
