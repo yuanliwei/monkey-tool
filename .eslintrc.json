@@ -3,22 +3,20 @@
         "browser": true,
         "commonjs": true,
         "es6": true,
-        "node": true,
-        "jquery": true
+        "node": true
     },
-    "parser": "babel-eslint",
     "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
+        "ecmaVersion": 2019,
         "sourceType": "module"
     },
+    "extends": "eslint:recommended",
     "globals": {
         "GoldenLayout": "readonly",
         "CodeMirror": "readonly"
     },
     "rules": {
         "no-const-assign": "warn",
+        "no-constant-condition": "off",
         "no-this-before-super": "warn",
         "no-undef": "warn",
         "no-unreachable": "warn",

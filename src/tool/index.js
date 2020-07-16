@@ -69,7 +69,7 @@ let sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout))
  *
  * @returns {Promise<string>}
  */
-let query = (command) => new Promise(async (resolve) => {
+let query = (command) => new Promise((resolve) => {
     let unique = uuid()
     queryCallbackUniques.push(unique)
     queryCallbackMap[unique] = () => { }
@@ -158,10 +158,10 @@ let clickRect = (rect) => clickCenter(getCenter(rect))
 /**
  * wait a change on mobile screen
  */
-let waitChange = () => new Promise(async (resolve) => {
+let waitChange = () => async () => {
     while ((await query('getisviewchange')) == 'false') sleep(10)
-    resolve()
-})
+    return
+}
 
 /**
  * get json tree only visible
@@ -191,16 +191,15 @@ let getVisibleTree = async () => {
  *
  * @param {string} string string
  */
-let waitTreeFor = (string) => new Promise(async (resolve) => {
+let waitTreeFor = async (string) => {
     while (true) {
         let tree = await getVisibleTree();
         if (JSON.stringify(tree).includes(string)) {
-            resolve(tree);
-            break
+            return tree
         }
         await waitChange()
     }
-})
+}
 
 /**
  * @callback matchCallback
