@@ -139,7 +139,7 @@ let filterVisible = (tree) => {
  * @param {number[]} rect rect [left, top, right, bottom]
  * @returns {number[]} [x, y]
  */
-let getCenter = (rect) => [rect[0] + rect[2], rect[1] + rect[3]].map(o => parseInt(o / 2))
+let getCenter = (rect) => [rect[0] + rect[2], rect[1] + rect[3]].map(o => Math.round(o / 2))
 
 /**
  * click at point
@@ -166,7 +166,7 @@ let waitChange = () => async () => {
 /**
  * get json tree only visible
  *
- * @returns {ViewTree}
+ * @returns {Promise<ViewTree|?>}
  */
 let getVisibleTree = async () => {
     let json = await query('queryview gettree json')
@@ -203,7 +203,7 @@ let waitTreeFor = async (string) => {
 
 /**
  * @callback matchCallback
- * @param {string} string
+ * @param {ViewTree} ViewTree
  * @returns {boolean}
  */
 
@@ -212,6 +212,8 @@ let waitTreeFor = async (string) => {
  *
  * @param {ViewTree} tree
  * @param {matchCallback} match
+ * 
+ * @returns {ViewTree}
  */
 let findInTree = (tree, match) => {
     let obj;
