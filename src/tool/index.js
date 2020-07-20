@@ -1,44 +1,50 @@
 const { spawn, execSync } = require('child_process');
 
-let devicesStr = execSync(`adb devices`).toString()
-let devices = devicesStr.split('\n').map(o => o.trim()).filter(o => o)
-devices = devices.map(o => o.split(/\s+/)).filter(o => o.length == 2).map(o => o[0])
-console.log(devices);
-
-if (!devices.length) throw Error('没有链接的手机')
-let device = devices.shift()
-
-let shell = spawn(`adb`, [`-s`, `${device}`, `shell`])
-shell.stderr.setEncoding('utf-8')
-shell.stdout.setEncoding('utf-8')
-shell.stderr.on('data', (chunk) => { console.log('err', chunk) })
-shell.stdin.on('error', (chunk) => { console.error('error', chunk) })
-shell.stdout.on('error', (chunk) => { console.error('error', chunk) })
-shell.stderr.on('error', (chunk) => { console.error('error', chunk) })
-shell.stdin.on('close', (chunk) => { console.error('close', chunk) })
-shell.stdout.on('close', (chunk) => { console.error('close', chunk) })
-shell.stderr.on('close', (chunk) => { console.error('close', chunk) })
-
-shell.stdin.write(`export CLASSPATH=/data/local/tmp/monkey_repl.jar\n`)
-shell.stdin.write(`exec app_process /system/bin com.android.commands.monkey.Monkey\n`)
-
 let queryCallbackMap = {}
 let queryCallbackUniques = []
 let queryCallbackChunks = ''
-shell.stdout.on('data', (chunk) => {
-    queryCallbackChunks += chunk
-    let unique = queryCallbackUniques[0]
-    let index = queryCallbackChunks.indexOf(`OK:${unique}`)
-    while (unique && index != -1) {
-        let result = queryCallbackChunks.substr(0, index)
-        queryCallbackChunks = queryCallbackChunks.substr(index + unique.length + 5)
-        queryCallbackMap[unique](result)
-        queryCallbackUniques.shift()
-        delete queryCallbackMap[unique]
-        unique = queryCallbackUniques[0]
-        index = queryCallbackChunks.indexOf(`OK:${unique}`)
-    }
-})
+let shell = null
+
+let connect = () => {
+    let devicesStr = execSync(`adb devices`).toString()
+    let devices = devicesStr.split('\n').map(o => o.trim()).filter(o => o)
+    devices = devices.map(o => o.split(/\s+/)).filter(o => o.length == 2).map(o => o[0])
+    console.log(devices);
+
+    if (!devices.length) throw Error('没有链接的手机')
+    let device = devices.shift()
+
+    shell = spawn(`adb`, [`-s`, `${device}`, `shell`])
+    shell.stderr.setEncoding('utf-8')
+    shell.stdout.setEncoding('utf-8')
+    shell.stderr.on('data', (chunk) => { console.log('err', chunk) })
+    shell.stdin.on('error', (chunk) => { console.error('error', chunk) })
+    shell.stdout.on('error', (chunk) => { console.error('error', chunk) })
+    shell.stderr.on('error', (chunk) => { console.error('error', chunk) })
+    shell.stdin.on('close', (chunk) => { console.error('close', chunk) })
+    shell.stdout.on('close', (chunk) => { console.error('close', chunk) })
+    shell.stderr.on('close', (chunk) => { console.error('close', chunk) })
+
+    shell.stdin.write(`export CLASSPATH=/data/local/tmp/monkey_repl.jar\n`)
+    shell.stdin.write(`exec app_process /system/bin com.android.commands.monkey.Monkey\n`)
+
+    shell.stdout.on('data', (chunk) => {
+        queryCallbackChunks += chunk
+        let unique = queryCallbackUniques[0]
+        let index = queryCallbackChunks.indexOf(`OK:${unique}`)
+        while (unique && index != -1) {
+            let result = queryCallbackChunks.substr(0, index)
+            queryCallbackChunks = queryCallbackChunks.substr(index + unique.length + 5)
+            queryCallbackMap[unique](result)
+            queryCallbackUniques.shift()
+            delete queryCallbackMap[unique]
+            unique = queryCallbackUniques[0]
+            index = queryCallbackChunks.indexOf(`OK:${unique}`)
+        }
+    })
+}
+
+connect()
 
 let AUTOINCREMENT = 0
 
@@ -50,11 +56,19 @@ let AUTOINCREMENT = 0
 let uuid = () => AUTOINCREMENT++ + Math.random().toString().repeat(3)
 
 /**
- *
  * @param {string} command run command
  */
 let run = (command) => {
     shell.stdin.write(`${command}\n`)
+}
+
+let reconnect = () => {
+    try {
+        run(`quit`)
+    } catch (error) {
+        console.error(error);
+    }
+    connect()
 }
 
 /**
@@ -249,6 +263,7 @@ let clickText = async (tree, text) => clickAny(tree, o => o.text && o.text.inclu
  */
 let clickId = async (tree, resourceId) => clickAny(tree, o => o.resource_id_name == resourceId)
 
+module.exports.reconnect = reconnect
 module.exports.uuid = uuid
 module.exports.run = run
 module.exports.sleep = sleep
