@@ -6,6 +6,11 @@ let queryCallbackChunks = ''
 let shell = null
 
 let connect = () => {
+    queryCallbackMap = {}
+    queryCallbackUniques = []
+    queryCallbackChunks = ''
+    shell = null
+
     let devicesStr = execSync(`adb devices`).toString()
     let devices = devicesStr.split('\n').map(o => o.trim()).filter(o => o)
     devices = devices.map(o => o.split(/\s+/)).filter(o => o.length == 2).map(o => o[0])
@@ -59,6 +64,9 @@ let uuid = () => AUTOINCREMENT++ + Math.random().toString().repeat(3)
  * @param {string} command run command
  */
 let run = (command) => {
+    if (shell.stdin.destroyed) {
+        throw new Error('shell.stdin.destroyed')
+    }
     shell.stdin.write(`${command}\n`)
 }
 
@@ -83,16 +91,20 @@ let sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout))
  *
  * @returns {Promise<string>}
  */
-let query = (command) => new Promise((resolve) => {
-    let unique = uuid()
-    queryCallbackUniques.push(unique)
-    queryCallbackMap[unique] = () => { }
-    run(`echo ${unique}`)
-    run(command)
-    unique = uuid()
-    queryCallbackUniques.push(unique)
-    queryCallbackMap[unique] = (data) => resolve(data.replace(/^[^;]*OK:/, '').trim())
-    run(`echo ${unique}`)
+let query = (command) => new Promise((resolve, reject) => {
+    try {
+        let unique = uuid()
+        queryCallbackUniques.push(unique)
+        queryCallbackMap[unique] = () => { }
+        run(`echo ${unique}`)
+        run(command)
+        unique = uuid()
+        queryCallbackUniques.push(unique)
+        queryCallbackMap[unique] = (data) => resolve(data.replace(/^[^;]*OK:/, '').trim())
+        run(`echo ${unique}`)
+    } catch (error) {
+        reject(error)
+    }
 })
 
 /**
