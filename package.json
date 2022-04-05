@@ -35,7 +35,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
     "he": "^1.2.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "packery": "^2.1.2",
     "particlesjs": "^2.2.3",
     "vkbeautify": "^0.99.3"
