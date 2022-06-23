@@ -167,7 +167,7 @@ export default class ViewScreen extends BaseView {
      *
      * @param {number} x
      * @param {number} y
-     * @param {import("../tool").ViewTree} tree
+     * @param {import("../../tool").ViewTree} tree
      * @param {number} ratioSize
      */
     findClickView(x, y, tree, ratioSize) {
@@ -175,7 +175,7 @@ export default class ViewScreen extends BaseView {
         y = y / ratioSize
         this.app.layout.eventHub.emit('onaddcode', { message: `tap ${Math.round(x)} ${Math.round(y)}` })
         let getRect = (bounds) => bounds.match(/\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]/).slice(1).map(o => parseInt(o))
-        /** @type {import("../tool").ViewTree[]} */
+        /** @type {import("../../tool").ViewTree[]} */
         let arr = []
         let loop = (node) => { arr.push(node); node.childrens && node.childrens.forEach(o => loop(o)) }
         loop(tree)

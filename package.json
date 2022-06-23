@@ -5,39 +5,12 @@
   "main": "index.js",
   "author": "yuanliwei",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "test": "gulp"
+    "test": "node -h"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-transform-runtime": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@yuanliwei/web-loader": "^1.0.2",
-    "babel-eslint": "^10.0.2",
-    "babelify": "^10.0.0",
-    "brfs": "^2.0.2",
-    "browserify": "^16.3.0",
-    "codemirror": "^5.48.2",
-    "golden-layout": "^1.5.9",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
-    "gulp-connect": "^5.7.0",
-    "gulp-htmlmin": "^5.0.1",
-    "gulp-rename": "^1.4.0",
-    "gulp-sourcemaps": "^2.6.5",
-    "gulp-uglify": "^3.0.2",
-    "gulplog": "^1.0.0",
-    "tinyify": "^2.5.1",
-    "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.4.4",
-    "he": "^1.2.0",
-    "moment": "^2.24.0",
-    "packery": "^2.1.2",
-    "particlesjs": "^2.2.3",
-    "vkbeautify": "^0.99.3"
   }
 }
