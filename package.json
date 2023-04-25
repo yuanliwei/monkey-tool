@@ -53,6 +53,6 @@
     "rollup-plugin-terser": "^7.0.2",
     "split.js": "^1.6.5",
     "vkbeautify": "^0.99.3",
-    "yaml": "^2.1.1"
+    "yaml": "^2.2.2"
   }
 }
