@@ -33,7 +33,7 @@
     "@material/mwc-top-app-bar": "^0.26.1",
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.3",
     "element-resize-detector": "^1.2.4",
     "js-base64": "^3.7.2",
