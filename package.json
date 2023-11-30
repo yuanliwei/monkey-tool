@@ -37,7 +37,7 @@
     "dayjs": "^1.11.3",
     "element-resize-detector": "^1.2.4",
     "js-base64": "^3.7.2",
-    "js-beautify": "^1.14.4",
+    "js-beautify": "^1.14.10",
     "jszip": "^3.10.0",
     "koa": "^2.13.4",
     "koa-router": "^10.1.1",
