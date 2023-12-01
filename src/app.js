@@ -1,12 +1,3 @@
-import MainApplication from './svelte/MainApplication.svelte'
+import MainApplication from './MainApplication.svelte'
 
-class App {
-    constructor() {
-        console.log('start app')
-        new MainApplication({ target: document.body, props: { app: this } })
-    }
-}
-
-export default App
-
-new App
+new MainApplication({ target: document.body, props: {} })

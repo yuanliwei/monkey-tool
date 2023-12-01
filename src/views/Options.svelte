@@ -1,14 +1,12 @@
 <script>
     import { afterUpdate, onDestroy, onMount } from "svelte";
-    import Split from "split.js";
-    import PageStateStore from "./PageStateStore";
 
     /** @type{'horizontal' | 'vertical'} */
     export let direction = "horizontal";
 
     export let guid = "split-default";
 
-    export let initSize = [50, 50]
+    export let initSize = [50, 50];
 
     /** @type{HTMLDivElement} */
     let elementOne = null;
@@ -19,25 +17,6 @@
 
     let oldSplit = null;
 
-    afterUpdate(() => {
-        if (oldSplit) {
-            oldSplit.destroy(true, true);
-        }
-        elementOne.style = "";
-        elementTwo.style = "";
-        elementGutter.style = "";
-        oldSplit = Split([elementOne, elementTwo], {
-            sizes: PageStateStore.get(guid) || initSize,
-            minSize: [0, 0],
-            direction: direction,
-            gutter: (_index, _direction) => {
-                return elementGutter;
-            },
-            onDragEnd: (sizes) => {
-                PageStateStore.put(guid, sizes);
-            },
-        });
-    });
     onDestroy(() => {
         if (oldSplit) {
             oldSplit.destroy(true, true);
@@ -45,14 +24,12 @@
     });
 </script>
 
-<div class="root {direction}">
-    <div class="one {direction}" bind:this={elementOne}>
-        <slot name="one" />
-    </div>
-    <div class="gutter {direction}" bind:this={elementGutter} />
-    <div class="two {direction}" bind:this={elementTwo}>
-        <slot name="two" />
-    </div>
+<div class="root">
+    <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore sed
+        maiores possimus nemo eaque odit veniam omnis optio, aliquam et quidem
+        exercitationem rem nesciunt, modi dicta similique ut nostrum vel.
+    </p>
 </div>
 
 <style>

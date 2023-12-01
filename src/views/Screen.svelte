@@ -15,18 +15,23 @@
             deviceUrl = value.url;
         });
 
-        setInterval(async () => {
-            let text = (
-                await (
-                    await fetch(deviceUrl, {
-                        method: "POST",
-                        body: "takescreenshot scale 0.02",
-                    })
-                ).json()
-            ).data;
+        fetch("/api/command", {
+            method: "POST",
+            body: "2345678",
+        });
 
-            screen.src = `data:image/png;base64,${text}`;
-        }, 1000);
+        // setInterval(async () => {
+        //     let text = (
+        //         await (
+        //             await fetch(deviceUrl, {
+        //                 method: "POST",
+        //                 body: "takescreenshot scale 0.02",
+        //             })
+        //         ).json()
+        //     ).data;
+
+        //     screen.src = `data:image/png;base64,${text}`;
+        // }, 1000);
     });
 </script>
 

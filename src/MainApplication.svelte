@@ -1,18 +1,4 @@
 <script>
-    import "@material/mwc-checkbox";
-    import "@material/mwc-drawer";
-    import "@material/mwc-formfield";
-    import "@material/mwc-icon-button";
-    import "@material/mwc-icon";
-    import "@material/mwc-textarea";
-    import "@material/mwc-textfield";
-    import "@material/mwc-top-app-bar";
-    import "@material/mwc-radio";
-    import "@material/mwc-button";
-    import "@material/mwc-select";
-    import "@material/mwc-list";
-    import "@material/mwc-list/mwc-list-item";
-    import "@material/mwc-list/mwc-check-list-item";
     import SplitView from "./views/SplitView.svelte";
     import Screen from "./views/Screen.svelte";
     import Options from "./views/Options.svelte";
@@ -37,7 +23,7 @@
             direction="vertical"
         >
             <Screen slot="one" {options} />
-            <Options slot="two" {options} />
+            <Options slot="two" />
         </SplitView>
         <SplitView
             slot="two"

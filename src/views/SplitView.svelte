@@ -1,13 +1,13 @@
 <script>
     import { afterUpdate, onDestroy, onMount } from "svelte";
     import Split from "split.js";
-    import PageStateStore from "./PageStateStore";
+    import { getCfg, putCfg } from "../common/PageStateStore.js";
 
     /** @type{'horizontal' | 'vertical'} */
     export let direction = "horizontal";
+    let oldDirection = "";
 
     export let guid = "split-default";
-
     export let initSize = [50, 50];
 
     /** @type{HTMLDivElement} */
@@ -19,6 +19,29 @@
 
     let oldSplit = null;
 
+    afterUpdate(async () => {
+        if (oldDirection == direction) {
+            return;
+        }
+        oldDirection = direction;
+        if (oldSplit) {
+            oldSplit.destroy(true, true);
+        }
+        elementOne.attributeStyleMap.clear()
+        elementTwo.attributeStyleMap.clear()
+        elementGutter.attributeStyleMap.clear()
+        oldSplit = Split([elementOne, elementTwo], {
+            sizes: await getCfg(guid) || initSize,
+            minSize: [0, 0],
+            direction: direction,
+            gutter: (_index, _direction) => {
+                return elementGutter;
+            },
+            onDragEnd: (sizes) => {
+                putCfg(guid, sizes);
+            },
+        });
+    });
     onDestroy(() => {
         if (oldSplit) {
             oldSplit.destroy(true, true);
@@ -26,12 +49,14 @@
     });
 </script>
 
-<div class="root">
-    <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore sed
-        maiores possimus nemo eaque odit veniam omnis optio, aliquam et quidem
-        exercitationem rem nesciunt, modi dicta similique ut nostrum vel.
-    </p>
+<div class="root {direction}">
+    <div class="one {direction}" bind:this={elementOne}>
+        <slot name="one" />
+    </div>
+    <div class="gutter {direction}" bind:this={elementGutter} />
+    <div class="two {direction}" bind:this={elementTwo}>
+        <slot name="two" />
+    </div>
 </div>
 
 <style>
@@ -47,13 +72,17 @@
         flex-direction: column;
     }
     .one.horizontal {
+        width: 100%;
         height: 100%;
     }
     .one.vertical {
         width: 100%;
+        height: 100%;
     }
     .gutter {
         background-color: rgba(0, 26, 255, 0.527);
+        touch-action: none;
+        z-index: 10;
     }
     .gutter.horizontal {
         height: 100%;
