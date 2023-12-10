@@ -4,10 +4,21 @@ import dayjs from 'dayjs'
 import http from 'http'
 import koaStatic from 'koa-static'
 import { fileURLToPath } from "url"
+import Controller from "android-controller-wrapper"
 
 const dirPublic = fileURLToPath(new URL('../dist/', import.meta.url))
 
 const router = new Router()
+const controller = new Controller({
+    type: 'repl',
+    command_type: 'text',
+    name: 'monkey-repl',
+    port: 5678,
+    ip_address: '',
+    allow_ip_address: '192.168.*',
+    query_view: true,
+    activity_controller: true,
+})
 
 export async function start() {
 
@@ -33,7 +44,7 @@ export async function start() {
     let port = process.env.PORT || 54346
 
     http.createServer(app.callback()).listen(port)
-
+    await controller.connect()
     return port
 
 }
@@ -69,6 +80,12 @@ router.get('/status', async (ctx) => {
 
 router.post('/api/command', async (ctx) => {
     let body = await getRequestBody(ctx)
+    let { type, cmd } = JSON.parse(body)
     console.log(body)
-    ctx.body = { code: 0 }
+    if (type == 'press') {
+        await controller.press(cmd)
+        ctx.body = { code: 0 }
+    } else {
+        ctx.body = { code: 1, msg: 'not support command type :' + type }
+    }
 })

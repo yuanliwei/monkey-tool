@@ -22,10 +22,52 @@
             oldSplit.destroy(true, true);
         }
     });
+
+    /**
+     * @param {KeyboardEvent} e
+     */
+    async function onKeyPress(e) {
+        console.log(e);
+        let cmd = null;
+        switch (e.key) {
+            case "ArrowDown":
+                cmd = "down";
+                break;
+            case "ArrowRight":
+                cmd = "right";
+                break;
+            case "ArrowUp":
+                cmd = "up";
+                break;
+            case "ArrowLeft":
+                cmd = "left";
+                break;
+            case " ":
+                cmd = "center";
+                break;
+            case "Backspace":
+                cmd = "back";
+                break;
+            case "Home":
+                cmd = "home";
+                break;
+            default:
+                break;
+        }
+        if (cmd) {
+            await fetch("/api/command", {
+                method: "POST",
+                body: JSON.stringify({
+                    type: "press",
+                    cmd: cmd,
+                }),
+            });
+        }
+    }
 </script>
 
 <div class="root">
-    <p>
+    <p role="presentation" on:keydown={onKeyPress} tabindex="-1">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore sed
         maiores possimus nemo eaque odit veniam omnis optio, aliquam et quidem
         exercitationem rem nesciunt, modi dicta similique ut nostrum vel.
