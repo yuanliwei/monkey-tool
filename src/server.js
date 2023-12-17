@@ -41,7 +41,7 @@ export async function start() {
     console.log('dirPublic', dirPublic)
     app.use(koaStatic(dirPublic))
 
-    let port = process.env.PORT || 54346
+    let port = process.env.PORT || 3000
 
     http.createServer(app.callback()).listen(port)
     await controller.connect()
